@@ -431,3 +431,30 @@ a { color: var(--primary); }
 .status-chip.mastery-great { background: rgba(16,185,129,.2); color: #059669; }
 .status-chip.mastery-danger { background: rgba(239,68,68,.15); color: var(--danger); }
 .link-btn.small { padding: 6px 12px; font-size: .8rem; min-height: 36px; }
+
+/* Páginas de estudo (mini-aulas) */
+.study-page .lesson-content { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 12px 0; line-height: 1.6; }
+.study-page .lesson-content h3 { font-size: 1rem; margin: 14px 0 6px; color: var(--primary); }
+.study-page .lesson-content p { margin: 0 0 10px; font-size: .92rem; }
+.study-page .lesson-content ul { padding-left: 20px; margin: 6px 0 10px; }
+.study-page .lesson-content li { margin: 4px 0; font-size: .9rem; }
+.formula-box { background: var(--surface-2); border-left: 4px solid var(--primary); padding: 10px 14px; border-radius: 8px; margin: 10px 0; }
+.formula-box code { font-size: 1rem; font-weight: 700; display: block; }
+.formula-desc { color: var(--muted); font-size: .82rem; display: block; margin-top: 4px; }
+.example-box { background: rgba(59,130,246,.06); border-radius: 10px; padding: 10px 14px; margin: 10px 0; }
+.example-text { margin: 0 0 4px; font-size: .9rem; }
+.example-solution { margin: 0; color: var(--ok); font-weight: 600; font-size: .88rem; }
+.lesson-section { margin: 14px 0; }
+.lesson-section h2 { font-size: 1rem; margin: 0 0 8px; }
+.lesson-examples, .lesson-tips, .lesson-mistakes { list-style: none; padding: 0; margin: 0; }
+.lesson-examples li, .lesson-tips li, .lesson-mistakes li { padding: 6px 10px; margin: 4px 0; background: var(--surface); border-radius: 8px; font-size: .88rem; }
+.tips-section li { border-left: 3px solid #f59e0b; }
+.mistakes-section li { border-left: 3px solid var(--danger); }
+.glossary-terms { display: flex; flex-wrap: wrap; gap: 6px; }
+.term-chip { padding: 4px 12px; border-radius: 16px; background: var(--surface-2); border: 1px solid var(--border); font-size: .82rem; text-decoration: none; color: var(--text); }
+.mastery-status-box { display: flex; gap: 10px; align-items: center; margin: 10px 0; padding: 8px 12px; background: var(--surface); border-radius: 10px; }
+.lesson-actions { background: var(--surface-2); border-radius: 12px; padding: 14px; margin: 14px 0; }
+.lesson-actions h2 { font-size: 1rem; margin: 0 0 6px; }
+.topic-nav { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-top: 14px; padding: 10px; border-top: 1px solid var(--border); }
+.topic-nav-link { font-size: .85rem; font-weight: 600; text-decoration: none; color: var(--primary); }
+.topic-nav-link:last-child { text-align: right; }
