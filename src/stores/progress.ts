@@ -213,7 +213,6 @@ export function recordAnswer(rec: Omit<AnswerRecord, 'answeredAt'>): void {
       mastered: isCorrect ? prevMastery.consecutiveCorrect + 1 >= 2 : prevMastery.mastered,
     }
     // atualiza agenda de revisão espaçada (schema v2)
-    const tempState = { ...s }
     const prevReview = s.reviews[rec.questionId]
     const nextReview = updateReviewSchedule(rec.questionId, isCorrect, answeredAt)
     void prevReview // mantém referência para possível auditoria
@@ -223,7 +222,7 @@ export function recordAnswer(rec: Omit<AnswerRecord, 'answeredAt'>): void {
       studyDays,
       mastery: { ...s.mastery, [rec.questionId]: nextMastery },
       reviews: { ...s.reviews, [rec.questionId]: nextReview },
-      totalStudySeconds: tempState.totalStudySeconds,
+      totalStudySeconds: s.totalStudySeconds + Math.max(0, rec.timeSpentSeconds ?? 0),
     }
   })
 }
