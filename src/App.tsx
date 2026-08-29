@@ -17,6 +17,7 @@ import { ProvasAnterioresPage } from './pages/ProvasAnterioresPage'
 import { RevisaoPage } from './pages/RevisaoPage'
 import { CadernoDeErrosPage } from './pages/CadernoDeErrosPage'
 import { RevisaoDoDiaPage } from './pages/RevisaoDoDiaPage'
+import { DominioPage } from './pages/DominioPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { useProgress } from './hooks/useProgress'
 import { updateSettings } from './stores/progress'
@@ -95,6 +96,7 @@ export default function App() {
           <Route path="revisao" element={<RevisaoPage />} />
           <Route path="caderno-de-erros" element={<CadernoDeErrosPage />} />
           <Route path="revisao/hoje" element={<RevisaoDoDiaPage />} />
+          <Route path="dominio" element={<DominioPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

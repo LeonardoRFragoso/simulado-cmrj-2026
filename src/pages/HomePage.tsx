@@ -58,6 +58,10 @@ export function HomePage() {
           <h2>Revisão do Dia</h2>
           <p>Sessão inteligente: vencidas + caderno + novas, tudo em um lugar.</p>
         </Link>
+        <Link to="/dominio" className="mode-card">
+          <h2>Domínio por Assunto</h2>
+          <p>Veja seu nível em cada tópico do edital e onde focar.</p>
+        </Link>
         <Link to="/redacao" className="mode-card">
           <h2>Produção Textual</h2>
           <p>Escreva, conte linhas e revise com o checklist do edital.</p>
