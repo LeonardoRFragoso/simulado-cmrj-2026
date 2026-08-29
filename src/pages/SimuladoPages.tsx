@@ -5,6 +5,7 @@ import { MotivationalCard } from '../components/MotivationalCard'
 import { examRules } from '../data/edital-2026'
 import { generateOfficialSimulado, type SimuladoPaper } from '../lib/exam-generator'
 import { findPreviousPercentage, getMotivationalMessage } from '../lib/motivational-message'
+import { accumulateQuestionTime, normalizeQuestionIndex } from '../lib/simulado-session'
 import { objectiveScore, isObjectiveApproved, overallObjectiveScore } from '../lib/scoring'
 import { formatHMS, usePersistentTimer } from '../hooks/usePersistentTimer'
 import { progressStore, recordAnswer, saveSimulado, addStudyTime } from '../stores/progress'
@@ -20,6 +21,7 @@ interface SimuladoState {
   answers: Record<string, OptionId>
   marked: string[]
   startedAt: string
+  currentQuestionIndex: number
   /** tempo acumulado por questão (segundos) */
   questionTimes?: Record<string, number>
 }
@@ -28,7 +30,37 @@ function loadSimulado(): SimuladoState | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
-    return JSON.parse(raw) as SimuladoState
+
+    const parsed = JSON.parse(raw) as Partial<SimuladoState>
+    if (
+      !parsed.paper ||
+      !Array.isArray(parsed.paper.questions) ||
+      !parsed.answers ||
+      !Array.isArray(parsed.marked) ||
+      typeof parsed.startedAt !== 'string'
+    ) {
+      return null
+    }
+
+    // Migra simulados antigos sem currentQuestionIndex e normaliza valores corrompidos.
+    const currentQuestionIndex = normalizeQuestionIndex(
+      parsed.currentQuestionIndex,
+      parsed.paper.questions.length,
+    )
+    const normalized: SimuladoState = {
+      paper: parsed.paper,
+      answers: parsed.answers,
+      marked: parsed.marked,
+      startedAt: parsed.startedAt,
+      currentQuestionIndex,
+      questionTimes: parsed.questionTimes,
+    }
+
+    if (parsed.currentQuestionIndex !== currentQuestionIndex) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized))
+    }
+
+    return normalized
   } catch {
     return null
   }
@@ -54,6 +86,7 @@ export function SimuladoSetupPage() {
       answers: {},
       marked: [],
       startedAt: new Date().toISOString(),
+      currentQuestionIndex: 0,
     }
     persistSimulado(state)
     navigate('/simulado/prova')
@@ -97,7 +130,6 @@ export function SimuladoSetupPage() {
 export function SimuladoRunPage() {
   const navigate = useNavigate()
   const [state, setState] = useState<SimuladoState | null>(() => loadSimulado())
-  const [idx, setIdx] = useState(0)
   const [showGrid, setShowGrid] = useState(false)
   const [confirmFinish, setConfirmFinish] = useState(false)
   const [alertMsg, setAlertMsg] = useState<string | null>(null)
@@ -121,22 +153,12 @@ export function SimuladoRunPage() {
 
   const paper = state?.paper
   const questions = paper?.questions ?? []
+  const idx = normalizeQuestionIndex(state?.currentQuestionIndex, questions.length)
 
   const persist = useCallback((next: SimuladoState) => {
     setState(next)
     persistSimulado(next)
   }, [])
-
-  // Accumulate time per question when navigating away
-  const accumulateQuestionTime = useCallback(() => {
-    if (!state) return
-    const qid = questions[idx]?.id
-    if (!qid) return
-    const elapsed = Math.round((Date.now() - questionStartRef.current) / 1000)
-    if (elapsed < 1) return
-    const prevTimes = state.questionTimes ?? {}
-    persist({ ...state, questionTimes: { ...prevTimes, [qid]: (prevTimes[qid] ?? 0) + elapsed } })
-  }, [state, idx, questions, persist])
 
   // Reset timer when question changes
   useEffect(() => {
@@ -144,9 +166,26 @@ export function SimuladoRunPage() {
   }, [idx])
 
   const goToQuestion = useCallback((nextIdx: number) => {
-    accumulateQuestionTime()
-    setIdx(nextIdx)
-  }, [accumulateQuestionTime])
+    if (!state) return
+
+    const currentIdx = normalizeQuestionIndex(state.currentQuestionIndex, questions.length)
+    const currentQuestionId = questions[currentIdx]?.id
+    const elapsedSeconds = (Date.now() - questionStartRef.current) / 1000
+    const questionTimes = accumulateQuestionTime(
+      state.questionTimes,
+      currentQuestionId,
+      elapsedSeconds,
+    )
+    const currentQuestionIndex = normalizeQuestionIndex(nextIdx, questions.length)
+
+    persist({
+      ...state,
+      currentQuestionIndex,
+      questionTimes,
+    })
+    // Também reinicia ao navegar para a mesma questão pela grade.
+    questionStartRef.current = Date.now()
+  }, [state, questions, persist])
 
   const handleSelect = useCallback(
     (option: string) => {
@@ -170,10 +209,22 @@ export function SimuladoRunPage() {
       if (!state) return
       setConfirmFinish(false)
       timer.stop()
-      accumulateQuestionTime()
+
+      // Consolida também o tempo da questão que estava aberta no momento da entrega.
+      const currentIdx = normalizeQuestionIndex(
+        state.currentQuestionIndex,
+        state.paper.questions.length,
+      )
+      const currentQuestionId = state.paper.questions[currentIdx]?.id
+      const elapsedSeconds = (Date.now() - questionStartRef.current) / 1000
+      const questionTimes = accumulateQuestionTime(
+        state.questionTimes,
+        currentQuestionId,
+        elapsedSeconds,
+      ) ?? {}
+
       // registra respostas (sem duplicar: o resultado é consolidado aqui)
       const answers = state.answers
-      const questionTimes = state.questionTimes ?? {}
       let mathCorrect = 0
       let portCorrect = 0
       for (const q of state.paper.questions) {
@@ -305,7 +356,7 @@ export function SimuladoRunPage() {
 
       <nav className="question-nav" aria-label="Navegação entre questões">
         <button type="button" disabled={idx === 0} onClick={() => goToQuestion(idx - 1)}>Anterior</button>
-        <span>{idx + 1} de {questions.length}</span>
+        <span>Questão {idx + 1} de {questions.length}</span>
         {idx < questions.length - 1 ? (
           <button type="button" className="primary" onClick={() => goToQuestion(idx + 1)}>Próxima</button>
         ) : (
