@@ -15,6 +15,17 @@ import { SimuladoSetupPage, SimuladoRunPage, SimuladoResultPage } from './pages/
 import { RedacaoPage } from './pages/RedacaoPage'
 import { ProvasAnterioresPage } from './pages/ProvasAnterioresPage'
 import { RevisaoPage } from './pages/RevisaoPage'
+import { CadernoDeErrosPage } from './pages/CadernoDeErrosPage'
+import { RevisaoDoDiaPage } from './pages/RevisaoDoDiaPage'
+import { DominioPage } from './pages/DominioPage'
+import { EstudarTopicoPage } from './pages/EstudarTopicoPage'
+import { EstudarIndexPage, EstudarSubjectPage } from './pages/EstudarPages'
+import { FavoritosPage } from './pages/FavoritosPage'
+import { MiniSimuladoSetupPage, MiniSimuladoRunPage } from './pages/MiniSimuladoPages'
+import { PlanoDeEstudosPage } from './pages/PlanoDeEstudosPage'
+import { MetaDiariaPage } from './pages/MetaDiariaPage'
+import { GlossarioPage } from './pages/GlossarioPage'
+import { AnalyticsPage } from './pages/AnalyticsPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { useProgress } from './hooks/useProgress'
 import { updateSettings } from './stores/progress'
@@ -91,6 +102,19 @@ export default function App() {
           <Route path="redacao" element={<RedacaoPage />} />
           <Route path="provas-anteriores" element={<ProvasAnterioresPage />} />
           <Route path="revisao" element={<RevisaoPage />} />
+          <Route path="caderno-de-erros" element={<CadernoDeErrosPage />} />
+          <Route path="revisao/hoje" element={<RevisaoDoDiaPage />} />
+          <Route path="dominio" element={<DominioPage />} />
+          <Route path="estudar" element={<EstudarIndexPage />} />
+          <Route path="estudar/:subject" element={<EstudarSubjectPage />} />
+          <Route path="estudar/:subject/:topic" element={<EstudarTopicoPage />} />
+          <Route path="favoritos" element={<FavoritosPage />} />
+          <Route path="mini-simulado" element={<MiniSimuladoSetupPage />} />
+          <Route path="mini-simulado/:type" element={<MiniSimuladoRunPage />} />
+          <Route path="plano-de-estudos" element={<PlanoDeEstudosPage />} />
+          <Route path="meta-diaria" element={<MetaDiariaPage />} />
+          <Route path="glossario" element={<GlossarioPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

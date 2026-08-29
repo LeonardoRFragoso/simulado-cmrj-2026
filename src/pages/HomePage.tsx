@@ -50,6 +50,42 @@ export function HomePage() {
           <h2>Revisão de Erros</h2>
           <p>Revista as questões que você errou até dominá-las.</p>
         </Link>
+        <Link to="/caderno-de-erros" className="mode-card">
+          <h2>Caderno de Erros</h2>
+          <p>Histórico completo com agrupamento, status e repetição espaçada.</p>
+        </Link>
+        <Link to="/revisao/hoje" className="mode-card">
+          <h2>Revisão do Dia</h2>
+          <p>Sessão inteligente: vencidas + caderno + novas, tudo em um lugar.</p>
+        </Link>
+        <Link to="/dominio" className="mode-card">
+          <h2>Domínio por Assunto</h2>
+          <p>Veja seu nível em cada tópico do edital e onde focar.</p>
+        </Link>
+        <Link to="/favoritos" className="mode-card">
+          <h2>Favoritos</h2>
+          <p>Questões que você marcou com ★ para revisar depois.</p>
+        </Link>
+        <Link to="/mini-simulado" className="mode-card">
+          <h2>Mini-simulados</h2>
+          <p>Provas curtas (5+5, 20 Mat, 20 Port) sem tempo cronometrado.</p>
+        </Link>
+        <Link to="/plano-de-estudos" className="mode-card">
+          <h2>Plano de Estudos</h2>
+          <p>Cronograma com todos os tópicos do edital distribuídos por dia.</p>
+        </Link>
+        <Link to="/meta-diaria" className="mode-card">
+          <h2>Meta Diária</h2>
+          <p>Defina questões/minutos por dia e acompanhe seu progresso.</p>
+        </Link>
+        <Link to="/glossario" className="mode-card">
+          <h2>Glossário</h2>
+          <p>Definições dos termos das aulas e questões, com busca.</p>
+        </Link>
+        <Link to="/analytics" className="mode-card">
+          <h2>Analytics</h2>
+          <p>Tempo por questão, uso de dicas e padrões de erro.</p>
+        </Link>
         <Link to="/redacao" className="mode-card">
           <h2>Produção Textual</h2>
           <p>Escreva, conte linhas e revise com o checklist do edital.</p>

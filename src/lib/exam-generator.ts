@@ -77,3 +77,28 @@ export function pickByIds(ids: string[]): Question[] {
   const map = new Map(allQuestions.map((q) => [q.id, q]))
   return ids.map((id) => map.get(id)).filter((q): q is Question => Boolean(q))
 }
+
+/**
+ * Questões relacionadas a uma questão de referência.
+ * Prioridade:
+ * 1. Mesmo tópico (mais forte)
+ * 2. Mesmo subtopic
+ * 3. Mesma disciplina e tags em comum
+ * Exclui a própria questão.
+ */
+export function getRelatedQuestions(questionId: string, count = 5): Question[] {
+  const ref = allQuestions.find((q) => q.id === questionId)
+  if (!ref) return []
+  const candidates = allQuestions.filter((q) => q.id !== questionId && q.subject === ref.subject)
+  const scored = candidates.map((q) => {
+    let score = 0
+    if (q.topic === ref.topic) score += 10
+    if (q.subtopic && ref.subtopic && q.subtopic === ref.subtopic) score += 5
+    const commonTags = q.tags.filter((t) => ref.tags.includes(t)).length
+    score += commonTags
+    if (q.difficulty === ref.difficulty) score += 1
+    return { q, score }
+  })
+  scored.sort((a, b) => b.score - a.score)
+  return scored.slice(0, count).map((s) => s.q)
+}

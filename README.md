@@ -9,12 +9,27 @@ Aplicação mobile-first (PWA) para preparação ao Processo Seletivo de Admiss�
 - **Treino Rápido** — 5, 10 ou 20 questões com feedback imediato ou no final.
 - **Treino por Assunto** — escolha disciplina e assunto para focar o estudo.
 - **Simulado Oficial** — 20+20 questões, redação e cronômetro de 270 min (persistente, com autoentrega e alertas).
-- **Produção Textual** — propostas narrativas, contador de linhas/palavras, checklist de revisão e autoavaliação por competência (APTO/NÃO APTO).
+- **Mini-simulados** — provas curtas (5+5, 20 Mat, 20 Port) sem cronômetro.
+- **Produção Textual** — propostas narrativas, planejamento opcional, contador de linhas/palavras, checklist expandido e autoavaliação por competência (APTO/NÃO APTO).
 - **Provas Anteriores** — prova 2025/2026 com gabarito oficial, questões anuladas e modo estudo.
-- **Revisão de Erros** — banco automático das questões erradas, com mastery após 2 acertos consecutivos.
-- **Dashboard** — estatísticas, sequência de dias, gráfico de evolução, backup JSON e configurações.
+- **Explicações estruturadas** — todas as 413 questões com explicação curta, conceito, passo a passo (Matemática), dicas progressivas e justificativa por alternativa (Português).
+- **Dicas progressivas** — peça dicas antes de responder, sem entregar a alternativa.
+- **Caderno de Erros 2.0** — histórico completo com agrupamento por disciplina/tópico/subassunto/dificuldade, estados (novo/revisar/em aprendizado/dominado) e repetição espaçada.
+- **Repetição espaçada** — intervalos de 1, 3, 7, 14 e 30 dias. Migração de schema v1→v2 preserva dados.
+- **Revisão do Dia** — sessão inteligente combinando revisões vencidas, erros recentes, assuntos fracos e questões novas.
+- **Domínio por Assunto** — métrica de domínio com status (Não iniciado, Começando, Em progresso, Bom, Dominado, Precisa revisar).
+- **Mini-aulas** — 55 aulas de 2-5 minutos cobrindo 100% dos tópicos do edital.
+- **Estudar por assunto** — acesse mini-aulas e pratique por tópico.
+- **Ciclo erro→aprendizado** — ao errar, estude a mini-aula agora ou favorite para revisar depois.
+- **Questões relacionadas** — pratique mais 3 questões do mesmo tipo após um erro.
+- **Favoritos** — marque questões com ★ e treine somente com elas.
+- **Plano de Estudos** — cronograma automático baseado na data da prova e desempenho.
+- **Meta Diária** — defina questões ou minutos por dia e acompanhe seu progresso.
+- **Glossário** — termos pedagógicos com busca local instantânea.
+- **Dashboard pedagógico** — domínio geral e por disciplina, revisões vencidas, tópicos dominados, meta diária, gráfico de evolução, backup JSON e configurações.
 - **PWA offline** — funciona sem internet após o primeiro carregamento.
 - **Acessibilidade** — navegação por teclado, contraste AA, tema claro/escuro/sistema, `prefers-reduced-motion`.
+- **Privacidade** — sem cadastro, sem coleta de dados pessoais, sem trackers externos.
 
 ## Regras de prova (edital 2026/2027)
 
@@ -52,7 +67,7 @@ npm run dev
 
 ```bash
 npx tsc --noEmit   # typecheck
-npx vitest run     # 34 testes
+npx vitest run     # 79 testes
 npm run build      # build + PWA (service worker + manifest)
 ```
 
@@ -68,4 +83,5 @@ vercel --prod
 
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — arquitetura e padrões
 - [`docs/EDITAL-MAPPING.md`](docs/EDITAL-MAPPING.md) — mapeamento do edital
+- [`docs/PEDAGOGICAL-SYSTEM.md`](docs/PEDAGOGICAL-SYSTEM.md) — sistema pedagógico (explicações, repetição espaçada, domínio, revisão, plano)
 - [`docs/SOURCES.md`](docs/SOURCES.md) — fontes oficiais

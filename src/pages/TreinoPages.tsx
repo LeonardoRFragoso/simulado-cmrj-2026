@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { QuestionCard } from '../components/QuestionCard'
 import { topicsBySubject } from '../data/edital-2026'
@@ -159,11 +159,22 @@ export function PracticeSession({ questions, feedbackMode, sessionKey, context, 
   const [idx, setIdx] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({})
+  const [hintsByQuestion, setHintsByQuestion] = useState<Record<string, number>>({})
+  const questionStartRef = useRef<number>(Date.now())
   const progress = useProgress()
   const navigate = useNavigate()
   const question = questions[idx]
   const showResult = feedbackMode === 'imediato' ? submitted[question.id] : false
   const allAnswered = questions.every((q) => answers[q.id])
+
+  // Reset timer when question changes
+  useEffect(() => {
+    questionStartRef.current = Date.now()
+  }, [question.id])
+
+  const handleHintUsed = useCallback((level: number) => {
+    setHintsByQuestion((h) => ({ ...h, [question.id]: level }))
+  }, [question.id])
 
   const handleSelect = useCallback(
     (option: string) => {
@@ -172,6 +183,7 @@ export function PracticeSession({ questions, feedbackMode, sessionKey, context, 
       if (feedbackMode === 'imediato') {
         const isCorrect = option === question.correctOption
         setSubmitted((s) => ({ ...s, [question.id]: true }))
+        const timeSpentSeconds = Math.round((Date.now() - questionStartRef.current) / 1000)
         recordAnswer({
           questionId: question.id,
           selected: option as Question['correctOption'],
@@ -181,10 +193,12 @@ export function PracticeSession({ questions, feedbackMode, sessionKey, context, 
           difficulty: question.difficulty,
           context,
           sessionId: sessionKey,
+          timeSpentSeconds,
+          hintsUsed: hintsByQuestion[question.id] ?? 0,
         })
       }
     },
-    [question, submitted, feedbackMode, context, sessionKey],
+    [question, submitted, feedbackMode, context, sessionKey, hintsByQuestion],
   )
 
   const finish = () => {
@@ -203,6 +217,7 @@ export function PracticeSession({ questions, feedbackMode, sessionKey, context, 
           difficulty: q.difficulty,
           context,
           sessionId: sessionKey,
+          hintsUsed: hintsByQuestion[q.id] ?? 0,
         })
       }
     }
@@ -227,9 +242,12 @@ export function PracticeSession({ questions, feedbackMode, sessionKey, context, 
         total={questions.length}
         selected={answers[question.id]}
         showResult={showResult}
+        studyMode
         isFavorite={progress.favorites.includes(question.id)}
         onSelect={handleSelect}
         onToggleFavorite={() => toggleFavorite(question.id)}
+        onHintUsed={handleHintUsed}
+        onReviewLater={() => toggleFavorite(question.id)}
       />
 
       <nav className="question-nav" aria-label="Navegação entre questões">

@@ -1,4 +1,4 @@
-import type { Difficulty, OptionId, Question, Subject } from '../../types/exam'
+import type { Difficulty, OptionId, Question, QuestionExplanation, Subject } from '../../types/exam'
 
 const OPTION_IDS: OptionId[] = ['A', 'B', 'C', 'D', 'E']
 
@@ -12,7 +12,10 @@ export interface QuestionInput {
   /** textos das alternativas A..E */
   options: [string, string, string, string, string]
   correct: OptionId
+  /** explicação legada (string). Usada como fallback se explanationData ausente. */
   explanation: string
+  /** explicação estruturada pedagógica (preferencial) */
+  explanationData?: QuestionExplanation
   difficulty: Difficulty
   tags: string[]
   year?: number
@@ -32,6 +35,7 @@ export function q(input: QuestionInput): Question {
     options: input.options.map((text, i) => ({ id: OPTION_IDS[i], text })) as Question['options'],
     correctOption: input.correct,
     explanation: input.explanation,
+    explanationData: input.explanationData,
     difficulty: input.difficulty,
     tags: input.tags,
     sourceLabel: input.sourceLabel ?? 'Questão autoral de treinamento',

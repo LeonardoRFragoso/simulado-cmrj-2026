@@ -13,24 +13,34 @@ src/
 ├── styles.css               # CSS mobile-first com tema claro/escuro
 ├── components/
 │   ├── Layout.tsx           # Shell: topbar + content + bottom-nav + disclaimer
-│   └── QuestionCard.tsx     # Card de questão acessível (radiogroup, favorito, explicação)
+│   └── QuestionCard.tsx     # Card de questão acessível (radiogroup, favorito, explicação, dicas, erro→aprendizado)
 ├── pages/
 │   ├── HomePage.tsx
 │   ├── TreinoPages.tsx      # Setup + Config + Run (rápido e por assunto) + PracticeSession
 │   ├── TreinoResultPage.tsx
 │   ├── SimuladoPages.tsx    # Setup + Run (timer persistente, grade) + Result
-│   ├── RedacaoPage.tsx      # Propostas + editor + checklist + autoavaliação
+│   ├── MiniSimuladoPages.tsx # Mini-simulados (5+5, 20 Mat, 20 Port)
+│   ├── RedacaoPage.tsx      # Propostas + planejamento + editor + checklist expandido + autoavaliação
 │   ├── ProvasAnterioresPage.tsx
 │   ├── RevisaoPage.tsx      # Reutiliza PracticeSession
-│   └── DashboardPage.tsx    # Stats + gráfico + backup + settings
+│   ├── CadernoDeErrosPage.tsx # Caderno de Erros 2.0 com agrupamento e estados
+│   ├── RevisaoDoDiaPage.tsx # Revisão inteligente do dia
+│   ├── DominioPage.tsx      # Domínio por assunto com métrica e status
+│   ├── EstudarPages.tsx     # Listagem de disciplinas e tópicos para estudo
+│   ├── EstudarTopicoPage.tsx # Mini-aula + prática por tópico
+│   ├── FavoritosPage.tsx    # Questões favoritas com filtros e treino
+│   ├── PlanoDeEstudosPage.tsx # Cronograma automático
+│   ├── MetaDiariaPage.tsx   # Configuração de meta diária
+│   ├── GlossarioPage.tsx    # Glossário com busca
+│   └── DashboardPage.tsx    # Stats + domínio + meta + gráfico + backup + settings
 ├── hooks/
 │   ├── useProgress.ts       # useSyncExternalStore sobre progressStore
 │   ├── usePersistentTimer.ts# Cronômetro que sobrevive a reload
 │   └── useOnlineStatus.ts
 ├── stores/
-│   └── progress.ts          # Store local (localStorage), ações de domínio, seletores
+│   └── progress.ts          # Store local (localStorage), schema v2, repetição espaçada, domínio
 ├── lib/
-│   ├── exam-generator.ts    # Geração determinística de simulados (seed, shuffle, pickByTopic)
+│   ├── exam-generator.ts    # Geração determinística de simulados (seed, shuffle, pickByTopic, getRelatedQuestions)
 │   ├── scoring.ts           # Nota objetiva (0-10), média, aprovação
 │   └── essay.ts             # Contagem de linhas/palavras, validação, APTO/NÃO APTO
 ├── data/
@@ -44,11 +54,13 @@ src/
 │   │   ├── portuguese-conceptual-2.ts
 │   │   ├── portuguese-index.ts
 │   │   └── index.ts         # allQuestions, questionsBySubject, coverageReport, validateQuestions
+│   ├── lessons/
+│   │   └── index.ts         # 55 mini-aulas (uma por tópico do edital)
 │   └── past-exams/
 │       └── past-exams.ts    # Prova 2025/2026 com gabarito oficial e questões anuladas
 ├── types/
-│   ├── exam.ts              # Question, ExamRules, PastExam, OptionId, Subject
-│   └── progress.ts          # ProgressState, AnswerRecord, SimuladoResult, MasteryEntry
+│   ├── exam.ts              # Question, QuestionExplanation, ExamRules, PastExam, OptionId, Subject
+│   └── progress.ts          # ProgressState, AnswerRecord, ReviewSchedule, DailyGoal, StudyPlanConfig, EssayPlanning
 └── test/
     └── setup.ts             # Setup do Vitest (jsdom)
 ```
@@ -94,12 +106,18 @@ serve o `index.html` para todas as rotas (SPA offline). Ícones 192/512/maskable
 ## Testes
 
 - `src/data/questions/index.test.ts` — integridade e cobertura do banco (8 testes)
+- `src/data/questions/explanations.test.ts` — validação de explicações estruturadas (5 testes)
+- `src/data/lessons/index.test.ts` — cobertura de mini-aulas (6 testes)
 - `src/lib/scoring.test.ts` — notas objetivas (5 testes)
 - `src/lib/essay.test.ts` — contagem, validação, APTO (6 testes)
 - `src/lib/exam-generator.test.ts` — geração determinística (4 testes)
-- `src/stores/progress.test.ts` — persistência, mastery, streak, backup (11 testes)
+- `src/lib/related-questions.test.ts` — questões relacionadas (5 testes)
+- `src/stores/progress.test.ts` — persistência, mastery, streak, backup, migração (11 testes)
+- `src/stores/daily-review.test.ts` — revisão do dia (5 testes)
+- `src/components/QuestionCard.test.tsx` — UX pedagógica, dicas, explicação (10 testes)
+- `src/components/SimuladoNoLeak.test.tsx` — não vazamento de respostas no simulado (7 testes)
 
-Total: 34 testes, todos passando.
+Total: 79 testes, todos passando.
 
 ## Quality gates
 
