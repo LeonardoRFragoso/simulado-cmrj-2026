@@ -118,6 +118,8 @@ function RedacaoEditor({ proposal }: { proposal: Proposal }) {
   const [savedAt, setSavedAt] = useState<string | null>(null)
   const [showPlanning, setShowPlanning] = useState(!existing?.planning && !text)
   const [planning, setPlanning] = useState(existing?.planning ?? {})
+  const [guidedRevision, setGuidedRevision] = useState(false)
+  const [guidedStep, setGuidedStep] = useState(0)
 
   const validation = useMemo(() => validateEssay(text, Boolean(title.trim())), [text, title])
   const offTopic = useMemo(() => looksOffTopic(text, proposal.keywords), [text, proposal.keywords])
@@ -255,20 +257,42 @@ function RedacaoEditor({ proposal }: { proposal: Proposal }) {
 
       <section className="checklist-box">
         <h2>Checklist de revisão</h2>
-        <ul className="checklist">
-          {checklistItems.map((item) => (
-            <li key={item}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={Boolean(checklist[item])}
-                  onChange={(e) => setChecklist((c) => ({ ...c, [item]: e.target.checked }))}
-                />
-                {item}
-              </label>
-            </li>
-          ))}
-        </ul>
+        <div className="actions" style={{ marginBottom: '10px' }}>
+          <button
+            className={`link-btn small ${guidedRevision ? 'active' : ''}`}
+            onClick={() => setGuidedRevision((v) => !v)}
+            aria-pressed={guidedRevision}
+          >
+            {guidedRevision ? 'Modo lista' : 'Modo revisão guiada'}
+          </button>
+        </div>
+
+        {guidedRevision ? (
+          <GuidedRevision
+            items={checklistItems}
+            currentStep={guidedStep}
+            checklist={checklist}
+            onToggle={(item) => setChecklist((c) => ({ ...c, [item]: !c[item] }))}
+            onNext={() => setGuidedStep((s) => Math.min(s + 1, checklistItems.length - 1))}
+            onPrev={() => setGuidedStep((s) => Math.max(s - 1, 0))}
+            onFinish={() => { setGuidedRevision(false); setGuidedStep(0) }}
+          />
+        ) : (
+          <ul className="checklist">
+            {checklistItems.map((item) => (
+              <li key={item}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={Boolean(checklist[item])}
+                    onChange={(e) => setChecklist((c) => ({ ...c, [item]: e.target.checked }))}
+                  />
+                  {item}
+                </label>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section className="self-assess-box">
@@ -296,6 +320,75 @@ function RedacaoEditor({ proposal }: { proposal: Proposal }) {
         </div>
         <p className="warning">A autoavaliação é um guia de estudos e não substitui a correção da banca oficial.</p>
       </section>
+    </div>
+  )
+}
+
+function GuidedRevision({
+  items,
+  currentStep,
+  checklist,
+  onToggle,
+  onNext,
+  onPrev,
+  onFinish,
+}: {
+  items: string[]
+  currentStep: number
+  checklist: Record<string, boolean>
+  onToggle: (item: string) => void
+  onNext: () => void
+  onPrev: () => void
+  onFinish: () => void
+}) {
+  const item = items[currentStep]
+  const isLast = currentStep === items.length - 1
+  const checked = Boolean(checklist[item])
+  const checkedCount = items.filter((i) => checklist[i]).length
+
+  return (
+    <div className="guided-revision">
+      <div className="guided-progress">
+        <div className="progress-track" aria-hidden="true">
+          <div style={{ width: `${((currentStep + 1) / items.length) * 100}%` }} />
+        </div>
+        <span className="muted">{currentStep + 1} / {items.length} · {checkedCount} marcadas</span>
+      </div>
+
+      <div className="guided-step">
+        <p className="guided-question">{item}</p>
+        <div className="actions">
+          <button
+            className={`link-btn ${checked ? 'primary' : ''}`}
+            onClick={() => onToggle(item)}
+            aria-pressed={checked}
+          >
+            {checked ? '✓ Sim, está correto' : 'Marcar como ok'}
+          </button>
+          {!checked && (
+            <span className="guided-hint">← Revise seu texto para garantir este ponto</span>
+          )}
+        </div>
+      </div>
+
+      <div className="guided-nav">
+        <button
+          className="link-btn small"
+          onClick={onPrev}
+          disabled={currentStep === 0}
+        >
+          ← Anterior
+        </button>
+        {isLast ? (
+          <button className="link-btn small primary" onClick={onFinish}>
+            Concluir revisão
+          </button>
+        ) : (
+          <button className="link-btn small primary" onClick={onNext}>
+            Próximo →
+          </button>
+        )}
+      </div>
     </div>
   )
 }

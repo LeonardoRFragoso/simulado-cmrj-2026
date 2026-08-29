@@ -549,3 +549,34 @@ a { color: var(--primary); }
 .pedagogy-summary { background: var(--surface); border-radius: 12px; padding: 14px; margin: 12px 0; }
 .pedagogy-summary h2 { font-size: 1rem; margin: 0 0 10px; }
 .pedagogy-summary .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+/* Revisão guiada da redação */
+.guided-revision { background: var(--surface-2); border-radius: 12px; padding: 14px; }
+.guided-progress { margin-bottom: 12px; }
+.guided-progress .progress-track { height: 8px; margin-bottom: 4px; }
+.guided-step { padding: 10px 0; }
+.guided-question { font-size: 1rem; font-weight: 600; margin: 0 0 10px; line-height: 1.4; }
+.guided-hint { color: var(--muted); font-size: .82rem; font-style: italic; }
+.guided-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+.link-btn.small.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Analytics pedagógicos */
+.analytics-card { background: var(--surface); border-radius: 12px; padding: 14px; margin: 12px 0; }
+.analytics-card h2 { font-size: 1rem; margin: 0 0 10px; }
+.analytics-rows { display: flex; flex-direction: column; gap: 8px; }
+.analytics-row { display: grid; grid-template-columns: 110px 1fr 50px auto; gap: 8px; align-items: center; }
+.analytics-row-label { font-size: .85rem; font-weight: 600; }
+.analytics-row-bar { min-width: 0; }
+.analytics-row-bar .progress-track { height: 8px; margin: 0; }
+.analytics-row-bar .progress-track.good > div { background: var(--ok); }
+.analytics-row-bar .progress-track.warn > div { background: #f59e0b; }
+.analytics-row-bar .progress-track.danger > div { background: var(--danger); }
+.analytics-row-value { font-weight: 700; font-size: .9rem; text-align: right; }
+.analytics-row-sub { font-size: .75rem; }
+.analytics-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.analytics-list li {
+  display: grid; grid-template-columns: auto 1fr auto auto; gap: 8px; align-items: center;
+  padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px;
+}
+.analytics-topic-name { font-size: .88rem; }
+.analytics-topic-time { font-size: .78rem; color: var(--muted); }

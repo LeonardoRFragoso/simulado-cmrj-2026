@@ -25,6 +25,7 @@ import { MiniSimuladoSetupPage, MiniSimuladoRunPage } from './pages/MiniSimulado
 import { PlanoDeEstudosPage } from './pages/PlanoDeEstudosPage'
 import { MetaDiariaPage } from './pages/MetaDiariaPage'
 import { GlossarioPage } from './pages/GlossarioPage'
+import { AnalyticsPage } from './pages/AnalyticsPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { useProgress } from './hooks/useProgress'
 import { updateSettings } from './stores/progress'
@@ -113,6 +114,7 @@ export default function App() {
           <Route path="plano-de-estudos" element={<PlanoDeEstudosPage />} />
           <Route path="meta-diaria" element={<MetaDiariaPage />} />
           <Route path="glossario" element={<GlossarioPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
