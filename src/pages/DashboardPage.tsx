@@ -8,6 +8,10 @@ import {
   progressStore,
   subjectStats,
   topicsToReview,
+  dailyGoalProgress,
+  dueReviewsCount,
+  errorBookEntries,
+  allTopicMastery,
 } from '../stores/progress'
 import { setNickname, updateSettings } from '../stores/progress'
 
@@ -22,6 +26,15 @@ export function DashboardPage() {
   const streak = currentStreak()
   const best = bestStreak()
   const review = topicsToReview(5)
+  const goalProgress = dailyGoalProgress()
+  const dueCount = dueReviewsCount()
+  const errorEntries = errorBookEntries()
+  const activeErrors = errorEntries.filter((e) => !e.mastered).length
+  const masteredErrors = errorEntries.filter((e) => e.mastered).length
+  const matMastery = allTopicMastery('matematica')
+  const portMastery = allTopicMastery('portugues')
+  const dominatedTopics = [...matMastery, ...portMastery].filter((m) => m.status === 'dominado').length
+  const totalTopicsStudied = [...matMastery, ...portMastery].filter((m) => m.answered > 0).length
 
   const totalAnswered = progress.answers.filter((a) => !a.annulled).length
   const totalCorrect = progress.answers.filter((a) => !a.annulled && a.correct).length
@@ -87,6 +100,41 @@ export function DashboardPage() {
         <div className="subject-row">
           <h3>Português</h3>
           <p>{port.correct}/{port.answered} · {port.answered ? (port.accuracy * 100).toFixed(0) + '%' : '—'}</p>
+        </div>
+      </section>
+
+      {/* Meta diária */}
+      {goalProgress.target > 0 && (
+        <section className="goal-dashboard-card">
+          <h2>Meta de hoje</h2>
+          <div className="goal-dashboard-bar">
+            <div className="progress-track" aria-hidden="true">
+              <div style={{ width: `${Math.min(100, (goalProgress.current / goalProgress.target) * 100)}%` }} />
+            </div>
+            <span className={goalProgress.met ? 'met' : ''}>
+              {goalProgress.current}/{goalProgress.target} {goalProgress.type === 'questoes' ? 'questões' : 'minutos'}
+              {goalProgress.met && ' ✓'}
+            </span>
+          </div>
+          {!goalProgress.met && (
+            <Link to="/treino" className="link-btn small">Continuar agora →</Link>
+          )}
+        </section>
+      )}
+
+      {/* Resumo pedagógico */}
+      <section className="pedagogy-summary">
+        <h2>Resumo pedagógico</h2>
+        <div className="summary-stats">
+          <div><strong>{dueCount}</strong><span>revisões vencidas</span></div>
+          <div><strong>{activeErrors}</strong><span>no caderno de erros</span></div>
+          <div><strong>{masteredErrors}</strong><span>erros dominados</span></div>
+          <div><strong>{dominatedTopics}</strong><span>tópicos dominados</span></div>
+        </div>
+        <div className="actions">
+          {dueCount > 0 && <Link to="/revisao/hoje" className="link-btn">Revisão do dia ({dueCount})</Link>}
+          {activeErrors > 0 && <Link to="/caderno-de-erros" className="link-btn">Caderno de erros ({activeErrors})</Link>}
+          <Link to="/dominio" className="link-btn">Domínio por assunto</Link>
         </div>
       </section>
 

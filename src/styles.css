@@ -538,3 +538,14 @@ a { color: var(--primary); }
 .chip.subject.small.matematica { background: rgba(59,130,246,.15); color: var(--primary); }
 .chip.subject.small.portugues { background: rgba(168,85,247,.15); color: #9333ea; }
 .chip.subject.small.geral { background: var(--surface-2); color: var(--muted); }
+
+/* Dashboard pedagógico evoluído */
+.goal-dashboard-card { background: var(--surface); border-radius: 12px; padding: 14px; margin: 12px 0; }
+.goal-dashboard-card h2 { font-size: 1rem; margin: 0 0 8px; }
+.goal-dashboard-bar { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.goal-dashboard-bar .progress-track { height: 10px; }
+.goal-dashboard-bar span { font-size: .85rem; font-weight: 600; }
+.goal-dashboard-bar span.met { color: var(--ok); }
+.pedagogy-summary { background: var(--surface); border-radius: 12px; padding: 14px; margin: 12px 0; }
+.pedagogy-summary h2 { font-size: 1rem; margin: 0 0 10px; }
+.pedagogy-summary .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }

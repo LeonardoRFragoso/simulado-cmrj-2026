@@ -116,6 +116,8 @@ function RedacaoEditor({ proposal }: { proposal: Proposal }) {
   const [checklist, setChecklist] = useState<Record<string, boolean>>(existing?.reviewChecklist ?? {})
   const [selfAssessment, setSelfAssessment] = useState<Record<string, number>>(existing?.selfAssessment ?? {})
   const [savedAt, setSavedAt] = useState<string | null>(null)
+  const [showPlanning, setShowPlanning] = useState(!existing?.planning && !text)
+  const [planning, setPlanning] = useState(existing?.planning ?? {})
 
   const validation = useMemo(() => validateEssay(text, Boolean(title.trim())), [text, title])
   const offTopic = useMemo(() => looksOffTopic(text, proposal.keywords), [text, proposal.keywords])
@@ -131,19 +133,33 @@ function RedacaoEditor({ proposal }: { proposal: Proposal }) {
       updatedAt: new Date().toISOString(),
       reviewChecklist: checklist,
       selfAssessment,
+      planning,
     }
     upsertEssay(draft)
     setSavedAt(new Date().toLocaleTimeString('pt-BR'))
   }
 
   const checklistItems = [
-    'A história tem início, desenvolvimento e desfecho',
-    'A história atende ao tema proposto',
-    'As ideias são coerentes entre si',
-    'Usei conectivos e referências para dar coesão',
-    'Respeitei a norma-padrão da linguagem escrita',
+    'Respondi ao tema proposto',
+    'Minha história tem começo, desenvolvimento e fim',
+    'Há personagens na narrativa',
+    'O lugar onde acontece está claro',
+    'Os acontecimentos têm sequência lógica',
+    'Usei pontuação adequada',
+    'Evitei repetir palavras demais',
+    'Revisei a ortografia',
     'Incluí um título',
-    'O texto está dentro do limite de linhas',
+    'O texto tem entre 15 e 30 linhas',
+  ]
+
+  const planningFields: { key: keyof typeof planning; label: string; placeholder: string }[] = [
+    { key: 'mainCharacter', label: 'Personagem principal', placeholder: 'Quem é o protagonista?' },
+    { key: 'otherCharacters', label: 'Outros personagens', placeholder: 'Quem mais aparece na história?' },
+    { key: 'setting', label: 'Onde acontece?', placeholder: 'Qual é o cenário?' },
+    { key: 'time', label: 'Quando acontece?', placeholder: 'Em que época ou momento?' },
+    { key: 'problem', label: 'Qual é o problema?', placeholder: 'O que desencadeia a história?' },
+    { key: 'development', label: 'O que acontece no desenvolvimento?', placeholder: 'Como a história se desenvolve?' },
+    { key: 'ending', label: 'Como termina?', placeholder: 'Qual é o desfecho?' },
   ]
 
   return (
@@ -157,6 +173,42 @@ function RedacaoEditor({ proposal }: { proposal: Proposal }) {
         <h2>Proposta</h2>
         <p>{proposal.statement}</p>
         <p className="theme"><strong>Tema:</strong> {proposal.theme}</p>
+      </section>
+
+      {/* Planejamento da redação (opcional, não conta como linhas) */}
+      <section className="planning-box">
+        <button
+          className="planning-toggle"
+          onClick={() => setShowPlanning((v) => !v)}
+          aria-expanded={showPlanning}
+        >
+          {showPlanning ? '▼' : '▶'} Planejar minha redação (opcional)
+        </button>
+        {showPlanning && (
+          <div className="planning-fields">
+            <p className="hint">
+              Preencha o roteiro antes de começar. Estes dados <strong>não contam</strong> como linhas da redação.
+            </p>
+            {planningFields.map((f) => (
+              <div key={f.key} className="planning-field">
+                <label htmlFor={`plan-${f.key}`}>{f.label}</label>
+                <input
+                  id={`plan-${f.key}`}
+                  className="text-input"
+                  value={planning[f.key] ?? ''}
+                  onChange={(e) => setPlanning((p) => ({ ...p, [f.key]: e.target.value }))}
+                  placeholder={f.placeholder}
+                  maxLength={200}
+                />
+              </div>
+            ))}
+            <div className="actions">
+              <button className="link-btn primary" onClick={() => setShowPlanning(false)}>
+                Começar redação
+              </button>
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="editor-box">

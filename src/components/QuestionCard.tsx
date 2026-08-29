@@ -17,6 +17,8 @@ interface Props {
   onToggleFavorite?: () => void
   /** Callback quando o usuário pede dica (para analytics) */
   onHintUsed?: (level: number) => void
+  /** Callback quando o usuário pede para revisar depois (erro→aprendizado) */
+  onReviewLater?: () => void
 }
 
 export function QuestionCard({
@@ -31,6 +33,7 @@ export function QuestionCard({
   onSelect,
   onToggleFavorite,
   onHintUsed,
+  onReviewLater,
 }: Props) {
   const groupRef = useRef<HTMLDivElement>(null)
   const [showSteps, setShowSteps] = useState(false)
@@ -214,12 +217,27 @@ export function QuestionCard({
                   Ocultar passo a passo
                 </button>
               )}
-              <Link
-                className="action-btn"
-                to={`/estudar/${question.subject}/${encodeURIComponent(question.topic)}`}
-              >
-                Revisar assunto
-              </Link>
+              {isWrong && (
+                <>
+                  <Link
+                    className="action-btn primary"
+                    to={`/estudar/${question.subject}/${encodeURIComponent(question.topic)}`}
+                  >
+                    Estudar agora
+                  </Link>
+                  <button type="button" className="action-btn" onClick={onReviewLater}>
+                    Revisar depois
+                  </button>
+                </>
+              )}
+              {!isWrong && (
+                <Link
+                  className="action-btn"
+                  to={`/estudar/${question.subject}/${encodeURIComponent(question.topic)}`}
+                >
+                  Revisar assunto
+                </Link>
+              )}
             </div>
           )}
 

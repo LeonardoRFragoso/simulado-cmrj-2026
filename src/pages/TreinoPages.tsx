@@ -247,6 +247,7 @@ export function PracticeSession({ questions, feedbackMode, sessionKey, context, 
         onSelect={handleSelect}
         onToggleFavorite={() => toggleFavorite(question.id)}
         onHintUsed={handleHintUsed}
+        onReviewLater={() => toggleFavorite(question.id)}
       />
 
       <nav className="question-nav" aria-label="Navegação entre questões">
