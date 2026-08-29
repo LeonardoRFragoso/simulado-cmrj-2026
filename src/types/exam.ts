@@ -8,6 +8,26 @@ export interface QuestionOption {
   text: string
 }
 
+/**
+ * Explicação pedagógica estruturada.
+ * - short: sempre presente (resumo conciso do porquê da resposta)
+ * - concept: conceito/definição envolvido
+ * - steps: passo a passo (preferencial em Matemática com cálculo)
+ * - tip: dica útil / atalho / estratégia
+ * - commonMistake: erro comum que leva aos distratores
+ * - optionExplanations: justificativa por alternativa (especial em Português)
+ * - hints: dicas progressivas ANTES da resposta (não entregam a alternativa)
+ */
+export interface QuestionExplanation {
+  short: string
+  concept?: string
+  steps?: string[]
+  tip?: string
+  commonMistake?: string
+  optionExplanations?: Partial<Record<OptionId, string>>
+  hints?: string[]
+}
+
 export interface Question {
   id: string
   subject: Subject
@@ -20,7 +40,10 @@ export interface Question {
   supportText?: string
   options: QuestionOption[]
   correctOption: OptionId
+  /** explicação legada (string). Mantida para retrocompatibilidade. */
   explanation: string
+  /** explicação estruturada pedagógica. Quando ausente, derivada de `explanation`. */
+  explanationData?: QuestionExplanation
   difficulty: Difficulty
   tags: string[]
   /** origem: rótulo legível */
@@ -29,6 +52,12 @@ export interface Question {
   year?: number
   sourceType: QuestionSourceType
   sourceUrl?: string
+}
+
+/** Obtém a explicação estruturada, derivando de `explanation` (legado) se necessário. */
+export function getExplanation(q: Question): QuestionExplanation {
+  if (q.explanationData) return q.explanationData
+  return { short: q.explanation }
 }
 
 export interface ExamRules {

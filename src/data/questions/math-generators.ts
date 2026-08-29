@@ -1,4 +1,4 @@
-import type { Difficulty, Question } from '../../types/exam'
+import type { Difficulty, Question, QuestionExplanation } from '../../types/exam'
 import { indexToOption, q, shuffleOptions } from './builder'
 
 /** PRNG simples para reprodutibilidade */
@@ -31,6 +31,7 @@ interface GenSpec {
     correct: string
     distractors: string[]
     explanation: string
+    explanationData?: QuestionExplanation
     subtopic?: string
   }
 }
@@ -51,6 +52,7 @@ function build(spec: GenSpec): Question[] {
         options,
         correct: indexToOption(correctIndex),
         explanation: item.explanation,
+        explanationData: item.explanationData,
         difficulty: spec.difficulty,
         tags: spec.tags,
       }),
