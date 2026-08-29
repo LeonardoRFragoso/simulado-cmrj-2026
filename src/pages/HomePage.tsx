@@ -50,6 +50,10 @@ export function HomePage() {
           <h2>Revisão de Erros</h2>
           <p>Revista as questões que você errou até dominá-las.</p>
         </Link>
+        <Link to="/caderno-de-erros" className="mode-card">
+          <h2>Caderno de Erros</h2>
+          <p>Histórico completo com agrupamento, status e repetição espaçada.</p>
+        </Link>
         <Link to="/redacao" className="mode-card">
           <h2>Produção Textual</h2>
           <p>Escreva, conte linhas e revise com o checklist do edital.</p>

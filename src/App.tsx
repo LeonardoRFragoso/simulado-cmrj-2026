@@ -15,6 +15,7 @@ import { SimuladoSetupPage, SimuladoRunPage, SimuladoResultPage } from './pages/
 import { RedacaoPage } from './pages/RedacaoPage'
 import { ProvasAnterioresPage } from './pages/ProvasAnterioresPage'
 import { RevisaoPage } from './pages/RevisaoPage'
+import { CadernoDeErrosPage } from './pages/CadernoDeErrosPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { useProgress } from './hooks/useProgress'
 import { updateSettings } from './stores/progress'
@@ -91,6 +92,7 @@ export default function App() {
           <Route path="redacao" element={<RedacaoPage />} />
           <Route path="provas-anteriores" element={<ProvasAnterioresPage />} />
           <Route path="revisao" element={<RevisaoPage />} />
+          <Route path="caderno-de-erros" element={<CadernoDeErrosPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
