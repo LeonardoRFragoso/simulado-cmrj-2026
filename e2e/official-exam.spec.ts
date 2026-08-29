@@ -43,6 +43,7 @@ test('posição atual e contadores permanecem sincronizados após navegação e 
   await expect(page.locator('.sim-progress')).toHaveText('5/40 respondidas')
   await expect(page.locator('.question-card .counter')).toHaveText('Questão 6 de 40')
   await expect(page.locator('.question-nav span')).toHaveText('Questão 6 de 40')
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('cmrj-simulado-atual')!).currentQuestionIndex)).toBe(5)
 
   // A posição atual deve sobreviver ao reload junto com respostas e cronômetro.
   await page.reload()
@@ -55,4 +56,37 @@ test('posição atual e contadores permanecem sincronizados após navegação e 
   await page.locator('.grade-cells button').nth(39).click()
   await expect(page.locator('.question-card .counter')).toHaveText('Questão 40 de 40')
   await expect(page.locator('.question-nav span')).toHaveText('Questão 40 de 40')
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('cmrj-simulado-atual')!).currentQuestionIndex)).toBe(39)
+})
+
+test('migra simulado antigo sem posição e normaliza índice persistido inválido', async ({ page }) => {
+  await page.goto('/simulado')
+  await page.getByRole('button', { name: /Iniciar simulado oficial/i }).click()
+  await page.waitForURL(/\/simulado\/prova$/)
+
+  // Simula um estado legado criado antes de currentQuestionIndex existir.
+  await page.evaluate(() => {
+    const key = 'cmrj-simulado-atual'
+    const stored = JSON.parse(localStorage.getItem(key)!)
+    delete stored.currentQuestionIndex
+    localStorage.setItem(key, JSON.stringify(stored))
+  })
+  await page.reload()
+
+  await expect(page.locator('.question-card .counter')).toHaveText('Questão 1 de 40')
+  await expect(page.locator('.question-nav span')).toHaveText('Questão 1 de 40')
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('cmrj-simulado-atual')!).currentQuestionIndex)).toBe(0)
+
+  // Estado corrompido acima do limite deve ser trazido para a última questão válida.
+  await page.evaluate(() => {
+    const key = 'cmrj-simulado-atual'
+    const stored = JSON.parse(localStorage.getItem(key)!)
+    stored.currentQuestionIndex = 999
+    localStorage.setItem(key, JSON.stringify(stored))
+  })
+  await page.reload()
+
+  await expect(page.locator('.question-card .counter')).toHaveText('Questão 40 de 40')
+  await expect(page.locator('.question-nav span')).toHaveText('Questão 40 de 40')
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('cmrj-simulado-atual')!).currentQuestionIndex)).toBe(39)
 })
