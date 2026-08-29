@@ -20,6 +20,7 @@ import { RevisaoDoDiaPage } from './pages/RevisaoDoDiaPage'
 import { DominioPage } from './pages/DominioPage'
 import { EstudarTopicoPage } from './pages/EstudarTopicoPage'
 import { FavoritosPage } from './pages/FavoritosPage'
+import { MiniSimuladoSetupPage, MiniSimuladoRunPage } from './pages/MiniSimuladoPages'
 import { DashboardPage } from './pages/DashboardPage'
 import { useProgress } from './hooks/useProgress'
 import { updateSettings } from './stores/progress'
@@ -101,6 +102,8 @@ export default function App() {
           <Route path="dominio" element={<DominioPage />} />
           <Route path="estudar/:subject/:topic" element={<EstudarTopicoPage />} />
           <Route path="favoritos" element={<FavoritosPage />} />
+          <Route path="mini-simulado" element={<MiniSimuladoSetupPage />} />
+          <Route path="mini-simulado/:type" element={<MiniSimuladoRunPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
