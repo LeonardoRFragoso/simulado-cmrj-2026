@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getLesson, type LessonBlock } from '../data/lessons'
 import { topicsBySubject } from '../data/edital-2026'
-import { pickBySubjectTopic, shuffle } from '../lib/exam-generator'
+import { pickBySubjectTopic, shuffle, getRelatedQuestions } from '../lib/exam-generator'
 import { topicMastery } from '../stores/progress'
 import { useProgress } from '../hooks/useProgress'
 import type { Subject } from '../types/exam'
@@ -137,6 +137,30 @@ export function EstudarTopicoPage() {
           )}
         </div>
       </section>
+
+      {/* Questões relacionadas */}
+      {relatedQuestions.length > 1 && (
+        <section className="lesson-section related-questions-section">
+          <h2>Questões relacionadas</h2>
+          <ul className="related-list">
+            {getRelatedQuestions(relatedQuestions[0].id, 5).map((rq) => (
+              <li key={rq.id} className="related-item">
+                <span className="related-meta">
+                  <span className="chip diff">{rq.difficulty === 'facil' ? 'Fácil' : rq.difficulty === 'media' ? 'Média' : 'Difícil'}</span>
+                  {rq.subtopic && <span className="chip subtopic">{rq.subtopic}</span>}
+                </span>
+                <span className="related-statement">{rq.statement}</span>
+                <Link
+                  className="link-btn small"
+                  to={`/treino/assunto/${subject}/${encodeURIComponent(rq.topic)}`}
+                >
+                  Treinar
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       {/* Navegação entre tópicos */}
       <TopicNavigation subject={subject} currentTopic={decodedTopic} />
