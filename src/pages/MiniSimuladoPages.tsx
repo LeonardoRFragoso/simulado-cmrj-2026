@@ -103,6 +103,7 @@ export function MiniSimuladoRunPage() {
       context="treino-rapido"
       backTo="/mini-simulado"
       title={config.label}
+      examType="mini-simulado"
     />
   )
 }

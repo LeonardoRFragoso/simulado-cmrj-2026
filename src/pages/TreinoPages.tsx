@@ -153,9 +153,10 @@ export interface PracticeSessionProps {
   context: 'treino-rapido' | 'treino-assunto' | 'revisao-erros'
   backTo: string
   title: string
+  examType?: 'treino' | 'mini-simulado' | 'matematica' | 'portugues'
 }
 
-export function PracticeSession({ questions, feedbackMode, sessionKey, context, backTo, title }: PracticeSessionProps) {
+export function PracticeSession({ questions, feedbackMode, sessionKey, context, backTo, title, examType = 'treino' }: PracticeSessionProps) {
   const [idx, setIdx] = useState(0)
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({})
@@ -221,7 +222,7 @@ export function PracticeSession({ questions, feedbackMode, sessionKey, context, 
         })
       }
     }
-    navigate('resultado', { state: { answers, questions, sessionKey } })
+    navigate('resultado', { state: { answers, questions, sessionKey, examType } })
   }
 
   const correctCount = questions.filter((q) => submitted[q.id] && answers[q.id] === q.correctOption).length

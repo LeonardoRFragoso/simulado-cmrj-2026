@@ -1,11 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { QuestionCard } from '../components/QuestionCard'
+import { MotivationalCard } from '../components/MotivationalCard'
 import { examRules } from '../data/edital-2026'
 import { generateOfficialSimulado, type SimuladoPaper } from '../lib/exam-generator'
+import { findPreviousPercentage, getMotivationalMessage } from '../lib/motivational-message'
 import { objectiveScore, isObjectiveApproved, overallObjectiveScore } from '../lib/scoring'
 import { formatHMS, usePersistentTimer } from '../hooks/usePersistentTimer'
-import { recordAnswer, saveSimulado, addStudyTime } from '../stores/progress'
+import { progressStore, recordAnswer, saveSimulado, addStudyTime } from '../stores/progress'
+import { useProgress } from '../hooks/useProgress'
 import type { OptionId } from '../types/exam'
 import type { SimuladoResult } from '../types/progress'
 
@@ -343,6 +346,7 @@ interface ResultState {
 export function SimuladoResultPage() {
   const location = useLocation()
   const state = location.state as ResultState | null
+  const progress = useProgress()
   if (!state) {
     return <div className="page"><h1>Resultado</h1><p>Sem resultado disponível.</p><Link to="/simulado" className="link-btn">Novo simulado</Link></div>
   }
@@ -364,10 +368,57 @@ export function SimuladoResultPage() {
 
   const wrong = paper.questions.filter((q) => answers[q.id] !== q.correctOption)
 
+  // Mensagem motivacional
+  const overallPercentage = Math.round(
+    ((result.mathCorrect + result.portugueseCorrect) /
+      (result.mathTotal + result.portugueseTotal)) * 100,
+  )
+  const mathPercentage = Math.round((result.mathCorrect / result.mathTotal) * 100)
+  const portPercentage = Math.round((result.portugueseCorrect / result.portugueseTotal) * 100)
+
+  // Tópico mais fraco (com pelo menos 2 questões)
+  const weakestTopicEntry = byTopic
+    .filter((t) => t.total >= 2)
+    .map((t) => ({ topic: t.topic, acc: t.correct / t.total }))
+    .sort((a, b) => a.acc - b.acc)[0]
+  const weakestTopic = weakestTopicEntry && weakestTopicEntry.acc < 0.7 ? weakestTopicEntry.topic : undefined
+
+  // Resultado anterior comparável
+  const previousSimulados = progressStore.get().simulados
+  const previousPercentage = findPreviousPercentage(previousSimulados, 'oficial')
+
+  const motivational = useMemo(
+    () =>
+      getMotivationalMessage(
+        {
+          nickname: progress.nickname || undefined,
+          percentage: overallPercentage,
+          mathPercentage,
+          portuguesePercentage: portPercentage,
+          previousPercentage,
+          weakestTopic,
+          examType: 'simulado-oficial',
+        },
+        hashString(result.id),
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [result.id, progress.nickname, overallPercentage, mathPercentage, portPercentage, previousPercentage, weakestTopic],
+  )
+
   return (
     <div className="page">
       <h1>Resultado do Simulado Oficial</h1>
       {auto && <p className="info-note">⏱ O tempo acabou e a prova foi entregue automaticamente.</p>}
+
+      <MotivationalCard
+        result={motivational}
+        percentage={overallPercentage}
+        disciplines={[
+          { label: 'Matemática', percentage: mathPercentage },
+          { label: 'Português', percentage: portPercentage },
+        ]}
+        weakestTopic={weakestTopic}
+      />
 
       <section className="result-block">
         <h2>Matemática</h2>
@@ -440,4 +491,12 @@ export function SimuladoResultPage() {
       </div>
     </div>
   )
+}
+
+function hashString(s: string): number {
+  let h = 0
+  for (let i = 0; i < s.length; i++) {
+    h = (h * 31 + s.charCodeAt(i)) | 0
+  }
+  return Math.abs(h)
 }
