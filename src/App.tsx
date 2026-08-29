@@ -19,6 +19,7 @@ import { CadernoDeErrosPage } from './pages/CadernoDeErrosPage'
 import { RevisaoDoDiaPage } from './pages/RevisaoDoDiaPage'
 import { DominioPage } from './pages/DominioPage'
 import { EstudarTopicoPage } from './pages/EstudarTopicoPage'
+import { FavoritosPage } from './pages/FavoritosPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { useProgress } from './hooks/useProgress'
 import { updateSettings } from './stores/progress'
@@ -99,6 +100,7 @@ export default function App() {
           <Route path="revisao/hoje" element={<RevisaoDoDiaPage />} />
           <Route path="dominio" element={<DominioPage />} />
           <Route path="estudar/:subject/:topic" element={<EstudarTopicoPage />} />
+          <Route path="favoritos" element={<FavoritosPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

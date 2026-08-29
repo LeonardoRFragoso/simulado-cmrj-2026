@@ -62,6 +62,10 @@ export function HomePage() {
           <h2>Domínio por Assunto</h2>
           <p>Veja seu nível em cada tópico do edital e onde focar.</p>
         </Link>
+        <Link to="/favoritos" className="mode-card">
+          <h2>Favoritos</h2>
+          <p>Questões que você marcou com ★ para revisar depois.</p>
+        </Link>
         <Link to="/redacao" className="mode-card">
           <h2>Produção Textual</h2>
           <p>Escreva, conte linhas e revise com o checklist do edital.</p>

@@ -468,3 +468,11 @@ a { color: var(--primary); }
 }
 .related-meta { display: flex; gap: 4px; }
 .related-statement { font-size: .85rem; line-height: 1.4; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+
+/* Favoritos */
+.favorites-list { list-style: none; padding: 0; margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+.favorite-item { padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.fav-item-main { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+.fav-statement { margin: 0 0 8px; font-size: .88rem; line-height: 1.4; }
+.fav-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.link-btn.danger { color: var(--danger); border-color: var(--danger); }
