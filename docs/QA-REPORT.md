@@ -81,3 +81,9 @@ Avisos:
 ## 8. Recomendação
 
 O projeto passa em todos os quality gates definidos para a Fase 3 (typecheck, 107 testes unitários, 22 E2E, build). Os itens de maior risco pedagógico e técnico foram mitigados. Recomendado merge para `main` e deploy na Vercel.
+
+## 9. Status do merge/deploy
+
+- PR #2 merged em `main` (squash, commit `3493154`).
+- Branch `qa/pedagogical-hardening` removida após merge.
+- Deploy Vercel: **bloqueado pelo limite gratuito (100 deploys/dia)**. Tentar novamente após a janela de 24h, ou conectar o repo à Vercel para deploy automático a partir do `main`.
