@@ -476,3 +476,28 @@ a { color: var(--primary); }
 .fav-statement { margin: 0 0 8px; font-size: .88rem; line-height: 1.4; }
 .fav-actions { display: flex; flex-wrap: wrap; gap: 6px; }
 .link-btn.danger { color: var(--danger); border-color: var(--danger); }
+
+/* Plano de estudos */
+.plan-config { background: var(--surface); border-radius: 12px; padding: 14px; margin: 12px 0; }
+.plan-config h2 { font-size: 1rem; margin: 0 0 8px; }
+.plan-progress { margin: 12px 0; }
+.plan-calendar { margin: 14px 0; }
+.plan-calendar h2 { font-size: 1rem; margin: 0 0 10px; }
+.plan-day { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; overflow: hidden; }
+.plan-day.done { border-left: 4px solid var(--ok); }
+.plan-day-head {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  border: 0; background: var(--surface); padding: 10px 12px;
+  text-align: left; cursor: pointer; min-height: 44px;
+}
+.day-num { font-weight: 700; font-size: .9rem; }
+.day-date { color: var(--muted); font-size: .82rem; flex: 1; }
+.day-meta { font-size: .8rem; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+.done-badge { color: var(--ok); font-weight: 700; }
+.plan-topics { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--border); }
+.plan-topic { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+.plan-topic:last-child { border-bottom: 0; }
+.plan-topic.concluido { opacity: .6; }
+.plan-topic-main { display: flex; gap: 8px; align-items: center; }
+.plan-topic-label { font-size: .88rem; }
+.plan-topic-actions { display: flex; gap: 6px; }

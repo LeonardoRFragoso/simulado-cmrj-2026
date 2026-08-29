@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { QuestionCard } from '../components/QuestionCard'
 import { examRules } from '../data/edital-2026'
@@ -17,6 +17,8 @@ interface SimuladoState {
   answers: Record<string, OptionId>
   marked: string[]
   startedAt: string
+  /** tempo acumulado por questão (segundos) */
+  questionTimes?: Record<string, number>
 }
 
 function loadSimulado(): SimuladoState | null {
@@ -96,6 +98,7 @@ export function SimuladoRunPage() {
   const [showGrid, setShowGrid] = useState(false)
   const [confirmFinish, setConfirmFinish] = useState(false)
   const [alertMsg, setAlertMsg] = useState<string | null>(null)
+  const questionStartRef = useRef<number>(Date.now())
 
   const timer = usePersistentTimer({
     storageKey: 'cmrj-simulado-timer',
@@ -121,6 +124,27 @@ export function SimuladoRunPage() {
     persistSimulado(next)
   }, [])
 
+  // Accumulate time per question when navigating away
+  const accumulateQuestionTime = useCallback(() => {
+    if (!state) return
+    const qid = questions[idx]?.id
+    if (!qid) return
+    const elapsed = Math.round((Date.now() - questionStartRef.current) / 1000)
+    if (elapsed < 1) return
+    const prevTimes = state.questionTimes ?? {}
+    persist({ ...state, questionTimes: { ...prevTimes, [qid]: (prevTimes[qid] ?? 0) + elapsed } })
+  }, [state, idx, questions, persist])
+
+  // Reset timer when question changes
+  useEffect(() => {
+    questionStartRef.current = Date.now()
+  }, [idx])
+
+  const goToQuestion = useCallback((nextIdx: number) => {
+    accumulateQuestionTime()
+    setIdx(nextIdx)
+  }, [accumulateQuestionTime])
+
   const handleSelect = useCallback(
     (option: string) => {
       if (!state) return
@@ -143,8 +167,10 @@ export function SimuladoRunPage() {
       if (!state) return
       setConfirmFinish(false)
       timer.stop()
+      accumulateQuestionTime()
       // registra respostas (sem duplicar: o resultado é consolidado aqui)
       const answers = state.answers
+      const questionTimes = state.questionTimes ?? {}
       let mathCorrect = 0
       let portCorrect = 0
       for (const q of state.paper.questions) {
@@ -162,6 +188,7 @@ export function SimuladoRunPage() {
             difficulty: q.difficulty,
             context: 'simulado',
             sessionId: state.paper.id,
+            timeSpentSeconds: questionTimes[q.id],
           })
         }
       }
@@ -243,7 +270,7 @@ export function SimuladoRunPage() {
                 <button
                   key={qq.id}
                   className={`cell ${ans ? 'answered' : ''} ${marked ? 'marked' : ''}`}
-                  onClick={() => { setIdx(i); setShowGrid(false) }}
+                  onClick={() => { goToQuestion(i); setShowGrid(false) }}
                   aria-label={`Questão ${i + 1}${ans ? ', respondida' : ', não respondida'}${marked ? ', marcada para revisão' : ''}`}
                 >
                   {i + 1}
@@ -274,10 +301,10 @@ export function SimuladoRunPage() {
       </div>
 
       <nav className="question-nav" aria-label="Navegação entre questões">
-        <button type="button" disabled={idx === 0} onClick={() => setIdx((i) => i - 1)}>Anterior</button>
+        <button type="button" disabled={idx === 0} onClick={() => goToQuestion(idx - 1)}>Anterior</button>
         <span>{idx + 1} de {questions.length}</span>
         {idx < questions.length - 1 ? (
-          <button type="button" className="primary" onClick={() => setIdx((i) => i + 1)}>Próxima</button>
+          <button type="button" className="primary" onClick={() => goToQuestion(idx + 1)}>Próxima</button>
         ) : (
           <button type="button" className="primary" onClick={() => setConfirmFinish(true)}>Finalizar prova</button>
         )}
