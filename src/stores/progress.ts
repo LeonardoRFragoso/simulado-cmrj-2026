@@ -10,7 +10,8 @@ import type {
   StudyPlanConfig,
 } from '../types/progress'
 import { PROGRESS_SCHEMA_VERSION } from '../types/progress'
-import type { Subject } from '../types/exam'
+import type { Subject, Question } from '../types/exam'
+import { allQuestions } from '../data/questions'
 
 const STORAGE_KEY = 'cmrj-progress-v1'
 
@@ -385,6 +386,70 @@ export function dueReviews(): { questionId: string; schedule: ReviewSchedule }[]
 /** Conta questões vencidas por disciplina. */
 export function dueReviewsCount(): number {
   return dueReviews().length
+}
+
+// ============ Revisão do Dia ============
+
+export interface DailyReviewComposition {
+  /** questões vencidas da repetição espaçada (prioridade máxima) */
+  dueReviewIds: string[]
+  /** questões erradas ainda não dominadas (caderno de erros ativo) */
+  wrongIds: string[]
+  /** questões novas para expandir cobertura (balanceado por disciplina) */
+  newIds: string[]
+  /** total recomendado para a sessão de hoje */
+  total: number
+}
+
+/**
+ * Compõe a revisão do dia inteligentemente:
+ * 1. Questões vencidas (repetição espaçada) — prioridade máxima
+ * 2. Questões erradas não dominadas — reforço do caderno
+ * 3. Questões novas — balanceadas por disciplina para expandir cobertura
+ *
+ * @param maxTotal máximo de questões na sessão (padrão 15)
+ * @param newRatio proporção de questões novas (0–1, padrão 0.3)
+ */
+export function buildDailyReview(maxTotal = 15, newRatio = 0.3): DailyReviewComposition {
+  const due = dueReviews().map((r) => r.questionId)
+  const wrong = wrongQuestions().map((w) => w.questionId)
+  const wrongOnly = wrong.filter((id) => !due.includes(id))
+
+  // Prioridade: due primeiro, depois wrong, depois new
+  // Reserva espaço para novas conforme newRatio (mas não força se houver muitas vencidas)
+  const targetNew = Math.max(0, Math.round(maxTotal * newRatio))
+  const maxForDueAndWrong = Math.max(0, maxTotal - targetNew)
+
+  const dueCapped = due.slice(0, maxForDueAndWrong)
+  const remainingForWrong = Math.max(0, maxForDueAndWrong - dueCapped.length)
+  const wrongCapped = wrongOnly.slice(0, remainingForWrong)
+
+  const remainingForNew = Math.max(0, maxTotal - dueCapped.length - wrongCapped.length)
+  const newTarget = Math.min(targetNew, remainingForNew)
+  const seenIds = new Set<string>([...dueCapped, ...wrongCapped])
+  const newIds = pickNewQuestions(newTarget, seenIds)
+
+  return {
+    dueReviewIds: dueCapped,
+    wrongIds: wrongCapped,
+    newIds,
+    total: dueCapped.length + wrongCapped.length + newIds.length,
+  }
+}
+
+/** Seleciona questões novas (nunca respondidas) balanceando por disciplina. */
+function pickNewQuestions(count: number, excludeIds: Set<string>): string[] {
+  if (count <= 0) return []
+  const s = progressStore.get()
+  const answeredIds = new Set(s.answers.map((a) => a.questionId))
+  const allExclude = new Set([...excludeIds, ...answeredIds])
+  const newPool: Question[] = allQuestions.filter((q) => !allExclude.has(q.id))
+  // balanceia por disciplina
+  const math = newPool.filter((q) => q.subject === 'matematica')
+  const port = newPool.filter((q) => q.subject === 'portugues')
+  const half = Math.ceil(count / 2)
+  const picked = [...math.slice(0, half), ...port.slice(0, count - half)]
+  return picked.slice(0, count).map((q) => q.id)
 }
 
 // ============ Caderno de erros 2.0 ============

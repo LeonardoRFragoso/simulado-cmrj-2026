@@ -393,3 +393,11 @@ a { color: var(--primary); }
 .status-chip.mastered { background: rgba(34,197,94,.15); color: var(--ok); }
 .error-group-actions { padding: 10px 14px; text-align: center; }
 .muted { color: var(--muted); }
+
+/* Revisão do Dia */
+.review-composition { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin: 14px 0; }
+.composition-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.composition-list li { display: flex; gap: 10px; align-items: flex-start; }
+.comp-icon { font-size: 1.4rem; flex-shrink: 0; }
+.composition-list strong { font-size: .92rem; }
+.composition-list p { margin: 2px 0 0; font-size: .82rem; }
