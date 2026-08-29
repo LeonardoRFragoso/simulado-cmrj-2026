@@ -165,6 +165,41 @@ a { color: var(--primary); }
 .explanation p { margin: 0 0 6px; font-size: .92rem; line-height: 1.5; }
 .source-note { color: var(--muted); font-size: .8rem; }
 
+/* Explicação estruturada (P0.4) */
+.correct-answer { background: rgba(34,197,94,.12); border-left: 4px solid var(--ok); padding: 8px 10px; border-radius: 8px; margin-bottom: 8px; font-size: .95rem; }
+.explanation-short { font-size: .95rem; }
+.explanation-concept, .explanation-tip, .explanation-mistake { font-size: .88rem; color: var(--muted); margin: 4px 0; }
+.explanation-mistake { color: var(--danger); }
+.exp-label { font-weight: 700; color: var(--text); margin-right: 4px; }
+.option-explanations { list-style: none; padding: 0; margin: 8px 0; font-size: .85rem; }
+.option-explanations li { padding: 4px 8px; border-radius: 6px; margin: 2px 0; background: var(--surface); }
+.option-explanations li.opt-correct { background: rgba(34,197,94,.15); font-weight: 600; }
+.explanation-steps { background: var(--surface); border-radius: 10px; padding: 10px 14px 10px 34px; margin: 8px 0; font-size: .9rem; line-height: 1.6; }
+.explanation-steps li { margin: 4px 0; }
+.step-item { counter-increment: step; }
+.explanation-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.action-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text);
+  border-radius: 10px; padding: 8px 14px; font-size: .88rem; font-weight: 600;
+  text-decoration: none; min-height: 40px;
+}
+.action-btn:active { transform: scale(.97); }
+
+/* Dicas progressivas (P0.5) */
+.hints-area { margin-top: 10px; padding: 10px; background: rgba(59,130,246,.08); border-radius: 10px; border: 1px dashed var(--border); }
+.hints-list { list-style: none; padding: 0; margin: 0 0 8px; }
+.hint-item { display: flex; gap: 8px; align-items: flex-start; padding: 6px 0; font-size: .88rem; }
+.hint-num { flex-shrink: 0; font-weight: 700; color: var(--primary); background: var(--surface); padding: 2px 8px; border-radius: 6px; font-size: .75rem; }
+.hint-text { line-height: 1.5; }
+.hint-btn {
+  border: 1px solid var(--primary); background: var(--surface); color: var(--primary);
+  border-radius: 10px; padding: 8px 14px; font-size: .85rem; font-weight: 700;
+  min-height: 40px; cursor: pointer;
+}
+.hint-btn:active { transform: scale(.97); }
+.hint-count { color: var(--muted); font-weight: 500; }
+
 /* nav between questions */
 .question-nav {
   position: sticky; bottom: 76px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px;

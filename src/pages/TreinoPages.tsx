@@ -227,6 +227,7 @@ export function PracticeSession({ questions, feedbackMode, sessionKey, context, 
         total={questions.length}
         selected={answers[question.id]}
         showResult={showResult}
+        studyMode
         isFavorite={progress.favorites.includes(question.id)}
         onSelect={handleSelect}
         onToggleFavorite={() => toggleFavorite(question.id)}
