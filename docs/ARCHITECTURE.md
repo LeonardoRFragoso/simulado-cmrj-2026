@@ -107,22 +107,28 @@ serve o `index.html` para todas as rotas (SPA offline). Ícones 192/512/maskable
 
 - `src/data/questions/index.test.ts` — integridade e cobertura do banco (8 testes)
 - `src/data/questions/explanations.test.ts` — validação de explicações estruturadas (5 testes)
+- `src/data/questions/math-generators.test.ts` — geração determinística e validação de distratores (2 suites)
 - `src/data/lessons/index.test.ts` — cobertura de mini-aulas (6 testes)
+- `src/data/glossary.test.ts` — glossário (3 testes)
 - `src/lib/scoring.test.ts` — notas objetivas (5 testes)
 - `src/lib/essay.test.ts` — contagem, validação, APTO (6 testes)
 - `src/lib/exam-generator.test.ts` — geração determinística (4 testes)
 - `src/lib/related-questions.test.ts` — questões relacionadas (5 testes)
 - `src/stores/progress.test.ts` — persistência, mastery, streak, backup, migração (11 testes)
+- `src/stores/progress-audit.test.ts` — caderno, meta, totalStudySeconds, backup/import (14 testes)
 - `src/stores/daily-review.test.ts` — revisão do dia (5 testes)
 - `src/components/QuestionCard.test.tsx` — UX pedagógica, dicas, explicação (10 testes)
+- `src/components/QuestionCardErrorCycle.test.tsx` — ciclo erro→aprendizado (3 testes)
 - `src/components/SimuladoNoLeak.test.tsx` — não vazamento de respostas no simulado (7 testes)
+- `src/pages/EstudarPages.test.tsx` — mini-aulas e prática por tópico (8 testes)
 
-Total: 79 testes, todos passando.
+Total: 107 testes, todos passando.
 
 ## Quality gates
 
 ```bash
-npx tsc --noEmit   # typecheck
-npx vitest run     # testes
+npm run typecheck  # TypeScript sem erros
+npm run test       # 107 testes unitários
+npm run test:e2e   # 22 testes E2E com Playwright
 npm run build      # build + PWA
 ```

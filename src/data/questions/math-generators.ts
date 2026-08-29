@@ -2,7 +2,7 @@ import type { Difficulty, Question, QuestionExplanation } from '../../types/exam
 import { indexToOption, q, shuffleOptions } from './builder'
 
 /** PRNG simples para reprodutibilidade */
-function makeRng(seed: number) {
+export function makeRng(seed: number) {
   let s = seed % 2147483647
   if (s <= 0) s += 2147483646
   return () => {
@@ -19,7 +19,7 @@ function int(rng: () => number, min: number, max: number): number {
   return Math.floor(rng() * (max - min + 1)) + min
 }
 
-interface GenSpec {
+export interface GenSpec {
   count: number
   seed: number
   idPrefix: string
@@ -36,12 +36,13 @@ interface GenSpec {
   }
 }
 
-function build(spec: GenSpec): Question[] {
+export function build(spec: GenSpec): Question[] {
   const rng = makeRng(spec.seed)
   const out: Question[] = []
   for (let k = 0; k < spec.count; k++) {
     const item = spec.make(rng, k)
-    const { options, correctIndex } = shuffleOptions(item.correct, item.distractors, spec.seed + k * 97)
+    const distractors = ensureDistinctDistractors(item.correct, item.distractors)
+    const { options, correctIndex } = shuffleOptions(item.correct, distractors, spec.seed + k * 97)
     out.push(
       q({
         id: `${spec.idPrefix}-${String(k + 1).padStart(3, '0')}`,
@@ -61,15 +62,90 @@ function build(spec: GenSpec): Question[] {
   return out
 }
 
-function num(n: number): string {
+/** Converte string numérica pt-BR (vírgula decimal, ponto milhar) para float. */
+function parsePtBr(s: string): number | null {
+  const cleaned = s.replace(/\s/g, '').replace(/\.(?=\d{3}\b)/g, '').replace(',', '.')
+  if (!/^-?\d+(\.\d+)?$/.test(cleaned)) return null
+  return parseFloat(cleaned)
+}
+
+/** Compara duas alternativas: iguais se texto idêntico OU mesmo valor numérico pt-BR. */
+function optionsEquivalent(a: string, b: string): boolean {
+  if (a === b) return true
+  const na = parsePtBr(a)
+  const nb = parsePtBr(b)
+  if (na !== null && nb !== null) return na === nb
+  return false
+}
+
+/**
+ * Garante que nenhum distrator é igual à correta ou a outro distrator.
+ * Distratores colidentes são nudged (incremento/decremento numérico) ou
+ * substituídos por um valor próximo garantidamente distinto.
+ * Para strings não-numéricas, anexa um sufixo distintivo.
+ */
+export function ensureDistinctDistractors(correct: string, distractors: string[]): string[] {
+  const result: string[] = []
+  const taken = [correct]
+  for (const d of distractors) {
+    if (!taken.some((t) => optionsEquivalent(d, t))) {
+      result.push(d)
+      taken.push(d)
+      continue
+    }
+    // Tenta nudge numérico
+    const n = parsePtBr(d)
+    if (n !== null) {
+      let candidate = n
+      let attempts = 0
+      while (taken.some((t) => {
+        const tn = parsePtBr(t)
+        return tn !== null && tn === candidate
+      }) && attempts < 50) {
+        candidate += 1
+        attempts++
+      }
+      const candidateStr = num(candidate)
+      result.push(candidateStr)
+      taken.push(candidateStr)
+    } else {
+      // Tenta nudge de fração "a/b" (incrementa numerador)
+      const frac = d.match(/^(\d+)\s*\/\s*(\d+)$/)
+      if (frac) {
+        let num2 = parseInt(frac[1], 10)
+        const den = parseInt(frac[2], 10)
+        let candidateStr = `${num2}/${den}`
+        while (taken.some((t) => optionsEquivalent(t, candidateStr))) {
+          num2 += 1
+          candidateStr = `${num2}/${den}`
+        }
+        result.push(candidateStr)
+        taken.push(candidateStr)
+      } else {
+        // Não numérico: anexa marcador
+        let suffix = 2
+        let candidateStr = `${d} (${suffix})`
+        while (taken.includes(candidateStr)) {
+          suffix++
+          candidateStr = `${d} (${suffix})`
+        }
+        result.push(candidateStr)
+        taken.push(candidateStr)
+      }
+    }
+  }
+  return result
+}
+
+export function num(n: number): string {
   return n.toLocaleString('pt-BR')
 }
 
-const distractorNear = (correct: number, deltas: number[]): string[] =>
+export const distractorNear = (correct: number, deltas: number[]): string[] =>
   deltas.map((d) => num(correct + d))
 
-export const generatedMath: Question[] = [
-  ...build({
+export const mathGenSpecs: GenSpec[] = [
+  {
     count: 10,
     seed: 11,
     idPrefix: 'mat-adicao',
@@ -102,8 +178,8 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
-  ...build({
+  },
+  {
     count: 10,
     seed: 23,
     idPrefix: 'mat-subtracao',
@@ -136,8 +212,8 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
-  ...build({
+  },
+  {
     count: 10,
     seed: 37,
     idPrefix: 'mat-multiplicacao',
@@ -170,8 +246,8 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
-  ...build({
+  },
+  {
     count: 10,
     seed: 41,
     idPrefix: 'mat-divisao',
@@ -204,8 +280,8 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
-  ...build({
+  },
+  {
     count: 8,
     seed: 53,
     idPrefix: 'mat-expr',
@@ -239,8 +315,8 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
-  ...build({
+  },
+  {
     count: 8,
     seed: 67,
     idPrefix: 'mat-decop',
@@ -264,7 +340,7 @@ export const generatedMath: Question[] = [
         ],
         explanation: `${a.toLocaleString('pt-BR')} ${op} ${b.toLocaleString('pt-BR')} = ${rs}.`,
         explanationData: {
-          short: `${a.toLocaleString('pt-BR')} ${op} ${b.toLocaleString('pt-BR')} = ${rs}.`,
+          short: `Some ${a.toLocaleString('pt-BR')} ${op} ${b.toLocaleString('pt-BR')} alinhando as casas decimais para obter ${rs}.`,
           concept: 'Operações com números decimais: alinhar a vírgula ao calcular.',
           steps: [
             `Identifique os valores: ${a.toLocaleString('pt-BR')} e ${b.toLocaleString('pt-BR')}.`,
@@ -280,8 +356,8 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
-  ...build({
+  },
+  {
     count: 8,
     seed: 79,
     idPrefix: 'mat-fracop',
@@ -321,8 +397,8 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
-  ...build({
+  },
+  {
     count: 8,
     seed: 83,
     idPrefix: 'mat-unidades',
@@ -471,8 +547,8 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
-  ...build({
+  },
+  {
     count: 8,
     seed: 97,
     idPrefix: 'mat-media',
@@ -507,8 +583,8 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
-  ...build({
+  },
+  {
     count: 8,
     seed: 101,
     idPrefix: 'mat-perim',
@@ -565,5 +641,7 @@ export const generatedMath: Question[] = [
         },
       }
     },
-  }),
+  },
 ]
+
+export const generatedMath: Question[] = mathGenSpecs.flatMap(build)

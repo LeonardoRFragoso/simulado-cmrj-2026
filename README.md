@@ -66,8 +66,9 @@ npm run dev
 ## Quality gates
 
 ```bash
-npx tsc --noEmit   # typecheck
-npx vitest run     # 79 testes
+npm run typecheck  # TypeScript sem erros
+npm run test       # 107 testes unitários
+npm run test:e2e   # 22 testes end-to-end (Playwright, Chromium + mobile)
 npm run build      # build + PWA (service worker + manifest)
 ```
 
