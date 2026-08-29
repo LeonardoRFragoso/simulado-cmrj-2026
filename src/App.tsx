@@ -19,9 +19,12 @@ import { CadernoDeErrosPage } from './pages/CadernoDeErrosPage'
 import { RevisaoDoDiaPage } from './pages/RevisaoDoDiaPage'
 import { DominioPage } from './pages/DominioPage'
 import { EstudarTopicoPage } from './pages/EstudarTopicoPage'
+import { EstudarIndexPage, EstudarSubjectPage } from './pages/EstudarPages'
 import { FavoritosPage } from './pages/FavoritosPage'
 import { MiniSimuladoSetupPage, MiniSimuladoRunPage } from './pages/MiniSimuladoPages'
 import { PlanoDeEstudosPage } from './pages/PlanoDeEstudosPage'
+import { MetaDiariaPage } from './pages/MetaDiariaPage'
+import { GlossarioPage } from './pages/GlossarioPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { useProgress } from './hooks/useProgress'
 import { updateSettings } from './stores/progress'
@@ -101,11 +104,15 @@ export default function App() {
           <Route path="caderno-de-erros" element={<CadernoDeErrosPage />} />
           <Route path="revisao/hoje" element={<RevisaoDoDiaPage />} />
           <Route path="dominio" element={<DominioPage />} />
+          <Route path="estudar" element={<EstudarIndexPage />} />
+          <Route path="estudar/:subject" element={<EstudarSubjectPage />} />
           <Route path="estudar/:subject/:topic" element={<EstudarTopicoPage />} />
           <Route path="favoritos" element={<FavoritosPage />} />
           <Route path="mini-simulado" element={<MiniSimuladoSetupPage />} />
           <Route path="mini-simulado/:type" element={<MiniSimuladoRunPage />} />
           <Route path="plano-de-estudos" element={<PlanoDeEstudosPage />} />
+          <Route path="meta-diaria" element={<MetaDiariaPage />} />
+          <Route path="glossario" element={<GlossarioPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>

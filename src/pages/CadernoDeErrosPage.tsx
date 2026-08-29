@@ -7,7 +7,7 @@ import { PracticeSession } from './TreinoPages'
 import type { Question, Subject } from '../types/exam'
 
 type StatusFilter = 'todos' | 'novos' | 'em-progresso' | 'dominados' | 'vencidos' | 'revisar'
-type GroupMode = 'topico' | 'disciplina' | 'cronologico'
+type GroupMode = 'topico' | 'subtopico' | 'disciplina' | 'dificuldade' | 'cronologico'
 
 export function CadernoDeErrosPage() {
   const progress = useProgress()
@@ -39,7 +39,9 @@ export function CadernoDeErrosPage() {
     for (const e of filtered) {
       let key: string
       if (groupMode === 'topico') key = `${e.subject}|${e.topic}`
+      else if (groupMode === 'subtopico') key = `${e.subject}|${e.topic}|${e.subtopic ?? '—'}`
       else if (groupMode === 'disciplina') key = e.subject
+      else if (groupMode === 'dificuldade') key = e.difficulty
       else key = (e.lastErrorAt ?? '').slice(0, 10)
       if (!groups.has(key)) groups.set(key, [])
       groups.get(key)!.push(e)
@@ -128,7 +130,9 @@ export function CadernoDeErrosPage() {
       <div className="filter-row" role="tablist" aria-label="Agrupar por">
         {([
           ['topico', 'Por tópico'],
+          ['subtopico', 'Por subassunto'],
           ['disciplina', 'Por disciplina'],
+          ['dificuldade', 'Por dificuldade'],
           ['cronologico', 'Cronológico'],
         ] as const).map(([val, label]) => (
           <button
@@ -198,8 +202,13 @@ function ErrorGroup({
   if (groupMode === 'topico') {
     const [subj, topic] = groupKey.split('|')
     label = `${subj === 'matematica' ? 'Matemática' : 'Português'} — ${topic}`
+  } else if (groupMode === 'subtopico') {
+    const [subj, topic, sub] = groupKey.split('|')
+    label = `${subj === 'matematica' ? 'Matemática' : 'Português'} — ${topic} — ${sub}`
   } else if (groupMode === 'disciplina') {
     label = groupKey === 'matematica' ? 'Matemática' : 'Português'
+  } else if (groupMode === 'dificuldade') {
+    label = groupKey === 'facil' ? 'Fácil' : groupKey === 'media' ? 'Média' : 'Difícil'
   } else if (groupMode === 'cronologico') {
     label = groupKey || 'Sem data'
   }
@@ -229,6 +238,7 @@ function ErrorGroup({
               <div className="error-item-main">
                 <span className="error-qid">{e.questionId}</span>
                 <span className="error-topic">{e.topic}</span>
+                {e.subtopic && <span className="error-subtopic">{e.subtopic}</span>}
                 <span className={`status-chip status-${e.status}`}>{statusLabel(e.status)}</span>
                 {e.mastered && <span className="status-chip mastered">✓ dominada</span>}
               </div>

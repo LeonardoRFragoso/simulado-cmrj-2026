@@ -74,6 +74,14 @@ export function HomePage() {
           <h2>Plano de Estudos</h2>
           <p>Cronograma com todos os tópicos do edital distribuídos por dia.</p>
         </Link>
+        <Link to="/meta-diaria" className="mode-card">
+          <h2>Meta Diária</h2>
+          <p>Defina questões/minutos por dia e acompanhe seu progresso.</p>
+        </Link>
+        <Link to="/glossario" className="mode-card">
+          <h2>Glossário</h2>
+          <p>Definições dos termos das aulas e questões, com busca.</p>
+        </Link>
         <Link to="/redacao" className="mode-card">
           <h2>Produção Textual</h2>
           <p>Escreva, conte linhas e revise com o checklist do edital.</p>

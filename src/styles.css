@@ -501,3 +501,40 @@ a { color: var(--primary); }
 .plan-topic-main { display: flex; gap: 8px; align-items: center; }
 .plan-topic-label { font-size: .88rem; }
 .plan-topic-actions { display: flex; gap: 6px; }
+
+/* Meta diária */
+.goal-today { background: var(--surface); border-radius: 12px; padding: 14px; margin: 12px 0; }
+.goal-today h2 { font-size: 1rem; margin: 0 0 10px; }
+.goal-display { display: flex; gap: 14px; align-items: baseline; margin-bottom: 10px; }
+.goal-current { display: flex; flex-direction: column; }
+.goal-current strong { font-size: 2rem; color: var(--primary); }
+.goal-current span { font-size: .8rem; color: var(--muted); }
+.goal-target { display: flex; gap: 6px; align-items: baseline; }
+.goal-target strong { font-size: 1.3rem; }
+.progress-track.large { height: 12px; margin: 10px 0; }
+.goal-status { font-weight: 600; margin: 8px 0 0; }
+.goal-status.met { color: var(--ok); }
+.goal-config { background: var(--surface); border-radius: 12px; padding: 14px; margin: 12px 0; }
+.goal-config h2 { font-size: 1rem; margin: 0 0 10px; }
+.goal-value-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 10px 0; }
+.goal-value-grid .qty-card { padding: 10px 6px; font-size: .82rem; }
+.goal-value-grid .qty-card.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+/* Glossário */
+.search-box { margin: 12px 0; }
+.search-box input {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border);
+  border-radius: 12px; font-size: 1rem; background: var(--surface); color: var(--text);
+  min-height: 48px;
+}
+.search-box input:focus { outline: 2px solid var(--primary); border-color: var(--primary); }
+.glossary-list { margin: 10px 0; padding: 0; }
+.glossary-entry { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.glossary-entry:last-child { border-bottom: 0; }
+.glossary-term { font-weight: 700; font-size: .92rem; display: flex; gap: 8px; align-items: center; }
+.glossary-def { margin: 4px 0 0; font-size: .88rem; line-height: 1.5; color: var(--text); }
+.glossary-related { margin: 4px 0 0; }
+.chip.subject.small { font-size: .68rem; padding: 2px 6px; }
+.chip.subject.small.matematica { background: rgba(59,130,246,.15); color: var(--primary); }
+.chip.subject.small.portugues { background: rgba(168,85,247,.15); color: #9333ea; }
+.chip.subject.small.geral { background: var(--surface-2); color: var(--muted); }

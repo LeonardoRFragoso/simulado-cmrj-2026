@@ -458,6 +458,7 @@ export interface ErrorBookEntry {
   questionId: string
   subject: Subject
   topic: string
+  subtopic?: string
   difficulty: string
   errorCount: number
   lastErrorAt?: string
@@ -471,6 +472,7 @@ export interface ErrorBookEntry {
 /** Entradas do caderno de erros agrupadas por questão (histórico completo, não remove dominadas). */
 export function errorBookEntries(subject?: Subject): ErrorBookEntry[] {
   const s = progressStore.get()
+  const questionMap = new Map(allQuestions.map((q) => [q.id, q]))
   const map = new Map<string, ErrorBookEntry>()
   for (const a of s.answers) {
     if (a.annulled) continue
@@ -478,10 +480,12 @@ export function errorBookEntries(subject?: Subject): ErrorBookEntry[] {
     const existing = map.get(a.questionId)
     const review = s.reviews[a.questionId]
     if (!existing) {
+      const q = questionMap.get(a.questionId)
       map.set(a.questionId, {
         questionId: a.questionId,
         subject: a.subject,
         topic: a.topic,
+        subtopic: q?.subtopic,
         difficulty: a.difficulty,
         errorCount: 0,
         lastErrorAt: undefined,
